@@ -1,6 +1,9 @@
 
 
 # 웹 소켓 VS SSE(Server-Sent-Event)
+
+
+##  SSE(Server-Sent-Event)
 **서버->클라이언트** 단방향 통신 채널 <BR>
 ![image](https://user-images.githubusercontent.com/57785267/162901603-d620766f-d2bf-4853-ae75-ac3f0f6a6081.png)
 
@@ -21,3 +24,11 @@
 이벤트 데이터는 UTF-8 인코딩 문자열만 지원, 일반적으로 JSON으로 가공하여 전송
 
 클라이언트에서 페이지를 닫아도 서버에서 감지하기 어려움
+
+**HTTP2를 사용하지 않는 경우 6개 정도로 제한된다**
+  
+
+### **Best**
+  - 주식 트레이딩 데이터, 실시간 차트
+  - 트위터 피드 알람, 페북 친구 요청
+  
