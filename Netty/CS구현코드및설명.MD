@@ -1,0 +1,187 @@
+
+
+# Netty 사용법
+
+#### 서버
+
+```
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+
+public class NettyServer {
+    private static final int PORT = 8082;
+
+    public static void main(String[] args) {
+        // Configure the server.
+        EventLoopGroup bossGroup = new NioEventLoopGroup(1); //클라이언트의 연결을 수락하는 부모스레드 그룹, NioEventLoopGroup(1): 최대 생성스레드수 1개 설정
+        EventLoopGroup workerGroup = new NioEventLoopGroup(); //연결된 클라이언트 소켓으로부터 데이터 입출력 및 이벤트 처리 담당
+        try {
+        	
+        	//ServerBootstrap: 서버 애플리케이션을 위한 부트스트랩
+        	//Bootstrap: 클라이언트를 위한 부트스트랩
+            ServerBootstrap b = new ServerBootstrap();
+            
+            //부트스트랩은 빌더 패턴으로 구현되어 있어서 다양한 설정이 가능함
+            b.option(ChannelOption.SO_BACKLOG, 1024);
+            b.group(bossGroup, workerGroup) //객체 초기화 시작
+                    .channel(NioServerSocketChannel.class) //서버 소켓이 사용할 입출력 모드 설정,  NioServerSocketChannel: 논블로킹 모드의 서버 소켓 채널을 생성하는 클래스
+                    .childHandler(new ChannelInitializer<Channel>() { //클라이언트로 부터 연결된 채널이 초기화될때 기본동작이 지정된 추상클래스
+
+						@Override
+						protected void initChannel(Channel ch) throws Exception {
+							ch.pipeline().addLast(new WebSocketHandler()); // 채널의 파이프라인에 핸들러 등록, WebSocketHandler: 클라이언트 연결이 생성되었을 경우 데이터 처리 담당
+							
+						}
+					});
+
+            //포트를 여러개 바인딩해도 문제되지 않는다
+            //https://groups.google.com/g/netty-ko/c/-9FKO0lyDPc
+            //https://groups.google.com/g/netty-ko/c/2dAGfzoqTpw
+            //멀티포트 바인딩방법
+            //https://blog.naver.com/PostView.nhn?isHttpsRedirect=true&blogId=hsunryou&logNo=220919284980
+            ChannelFuture ch = b.bind(PORT).sync(); 	//서버를 비동기 식으로 바인딩 한다. sync() 는 바인딩이 완료되기를 대기한다.
+
+            ch.channel().closeFuture().sync(); //채널의 CloseFuture를 얻고 완료 될때 까지 현재 스레드를 블로킹한다.
+            
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+        	// Group 을 종료 하고 모든 리소스를 해제 한다.
+            bossGroup.shutdownGracefully();
+            workerGroup.shutdownGracefully();
+        }
+    }
+}
+```
+
+
+
+#### 클라이언트
+
+```
+import io.netty.bootstrap.Bootstrap; 
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
+
+import java.net.InetSocketAddress;
+
+public class EchoClient {
+public EchoClient(){
+}
+
+public void start() throws Exception {
+    EventLoopGroup group = new NioEventLoopGroup();
+    try {
+    	
+     	//ServerBootstrap: 서버 애플리케이션을 위한 부트스트랩
+    	//Bootstrap: 클라이언트를 위한 부트스트랩
+        Bootstrap b = new Bootstrap();  // bootstrap 생성
+        b.group(group)  // 클라이언트 이벤트 처리할 EventLoopGroup을 지정.
+                .channel(NioSocketChannel.class)    // 채널 유형 NIO 지정
+                .remoteAddress(new InetSocketAddress("192.168.0.158",8083)) // 서버의 InetSocketAddress를 설정하면 내부적으로 연결 시도
+                .handler(new ChannelInitializer<SocketChannel>() { //핸들러 등록, ChannelInitializer은 ChannelInboundHandlerAdapter 상속 받고있는데
+                	//ChannelInboundHandlerAdapter를 상속받고있는 커스텀핸들러를 생성하면 유저가 내부 행동을 조작할수있음
+                    @Override
+                    public void initChannel(SocketChannel ch) throws Exception {    // 채널이 생성될 때 파이프라인에 EchoClientHandler 하나를 추가
+                        ch.pipeline().addLast(new EchoClientHandler());
+                    }
+                });
+        ChannelFuture f = b.connect().sync();   // 원격 피어로 연결하고 연결이 완료되기를 기다림
+        f.channel().closeFuture().sync();   // 채널이 닫힐 때까지 블로킹함.
+    } finally {
+        group.shutdownGracefully().sync();  // 스레드 풀을 종료하고 모든 리소스를 해제함
+    }
+}
+
+public static void main(String[] args) throws Exception {
+    new EchoClient().start();
+}
+}
+```
+
+
+
+#### 클라이언트 핸들러
+
+```
+import java.nio.charset.Charset; 
+import java.util.Scanner;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+
+//inbound handler: 입력데이터에 대한 변경상태를 감시하고 처리하는 핸들러
+//outbound handler: 출력데이터데 대한 동작을 가로채 처리하는 핸들러
+public class EchoClientHandler extends ChannelInboundHandlerAdapter  {
+	
+	 //채널이 활성화 되면 동작
+      @Override
+      public void channelActive(ChannelHandlerContext ctx){
+
+    	 //입력받은 문자열
+        String sendMessage = new Scanner(System.in).nextLine();
+
+        ByteBuf messageBuffer = Unpooled.buffer();
+        
+        //입력받은 문자열을 바이트로 전환하여 바이트버퍼에 담는다.
+        messageBuffer.writeBytes(sendMessage.getBytes());
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("전송: ");
+        builder.append(sendMessage);
+
+        System.out.println(builder.toString());
+        ctx.writeAndFlush(messageBuffer);
+      }
+
+      //채널의 inbound buffer에서 읽을 값이 있으면 읽는다.
+      @Override
+      public void channelRead(ChannelHandlerContext ctx, Object msg){
+
+        String readMessage = ((ByteBuf)msg).toString(Charset.defaultCharset());
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("수신: ");
+        builder.append(readMessage);
+
+        System.out.println(builder.toString());
+
+      }
+
+      //채넑 읽기 동작시(channelRead 활성화시) 호출됨
+      @Override
+      public void channelReadComplete(ChannelHandlerContext ctx){
+        ctx.close();
+      }
+
+      //오류 발생시 호출됨
+      @Override
+      public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause){
+        cause.printStackTrace();
+        ctx.close();
+      }
+}
+```
+
+
+
+
+
+
+
+추후 Netty+WebSocket+SpringBoot 서버개발 환경을 구현해야한다.
+
+아래 해당 관련 링크를 보고 참고해서 내용을 추거할 예정이다
+
+https://velog.io/@devdynam0507/Netty%EB%A1%9C-WebSocket-%EC%84%9C%EB%B2%84%EA%B0%9C%EB%B0%9C
