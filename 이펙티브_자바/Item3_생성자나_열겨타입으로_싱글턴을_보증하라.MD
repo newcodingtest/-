@@ -236,4 +236,119 @@ public enum Elvis implements Singer {
     ...
     }
 ```
+<br>
 
+<br>
+
+### 키워드 정리
+
+#### -리플렉션 API
+
+#### -메서드 참조
+
+```
+public class Person {
+	
+	LocalDate birthday;
+
+	public Person() {
+		
+	}
+	
+	public Person(LocalDate birthday) {
+		this.birthday = birthday;
+	}
+	
+	public int compareByAge(Person t) {
+		return this.birthday.compareTo(t.birthday);
+	}
+	
+	public static void main(String[] args) {
+		List<LocalDate> dates = new ArrayList<LocalDate>();
+		dates.add(LocalDate.of(1996, 12, 30));
+		dates.add(LocalDate.of(1996, 12, 30));
+		dates.add(LocalDate.of(1996, 12, 30));
+		
+		//Function을 이용한 일반 람다식
+		dates.stream().map(d ->{
+			return new Person(d);
+		}).collect(Collectors.toList());
+		//Function을 이용한 일반 람다식 -> 메서드 참조로 변환
+		dates.stream().map(Person::new).collect(Collectors.toList());
+
+
+		List<Person> people = new ArrayList<Person>();
+		
+		people.add(new Person(LocalDate.of(1996, 12, 30)));
+		people.add(new Person(LocalDate.of(1996, 11, 30)));
+		people.add(new Person(LocalDate.of(1996, 10, 30)));
+		
+		Comparator<Person> comparedByAge = Person::compareByAge;
+		
+		people.sort(comparedByAge);
+		
+	}
+}
+```
+
+> Person::new
+>
+> 메서드 참조로 코드가 더 간편해짐을 확인할수 있음
+
+<br>
+
+#### -함수형 인터페이스
+
+```
+public class FunctionalInterface {
+	public static void main(String[] args) {
+		Function<Integer, String> intToString = Object::toString;
+		
+		//메서드의 파라미터가 없지만 리턴 값만 있는것
+		Supplier<Person> integerSupplier = Person::new;
+	    Function<LocalDate,Person>personFunction = Person::new;
+				
+	    //리턴은 없는데 파라미터가 있는것 ex)syso, 먼가 받아서 출력만 하는것
+		Consumer<Integer> integerConsumer = System.out::println;
+		
+		//Boolean을 리턴함, 주로 stream 에서 filter 안에서 사용됨
+		Predicate<Integer> predicate;
+	}
+}
+```
+
+<br>
+
+#### -직렬화 역직렬화
+
+> 직렬화: 객체를 바이트스트림으로 변환
+>
+> 역직렬화: 바이트스트림을 객체로 변환
+
+JVM이 아니라면 역직렬화를 못하기 때문에 보통 
+
+범용적인 XML이나 JSON 포멧을 많이 사용한다.
+
+<br>
+
+##### 직렬화를 원하지 않는 필드가 있다면 transient를 필드에 추가해주자
+
+> ex) String transient String unnessary; 
+
+<br>
+
+##### static 필드는 직렬화가 되지 않는다.
+
+> why? 인스턴스 값이 아닌 클래스 값이기 때문에
+
+<br>
+
+##### 직렬화를 한 다음 클래스 정보가 변경(필드가 변경되거나 추가)된다면 역직렬화가 될까?
+
+> SerialVersionUID 값이 달라지기 때문에 역직렬화가 안된다.
+
+**[대안]**
+
+**클래스 정보가 변경되었지면 역직렬화 또는 직렬화를 하고싶다면**
+
+> 클래스 필드에 SerialVersionUID 을 선언해줘야한다.
