@@ -352,3 +352,33 @@ JVM이 아니라면 역직렬화를 못하기 때문에 보통
 **클래스 정보가 변경되었지 역직렬화 또는 직렬화를 하고싶다면**
 
 > 클래스 필드에 SerialVersionUID 을 선언해줘야한다.
+	
+
+
+#### 심화
+
+**Serializable 과 Externalizable의 차이는?**
+
+출처:https://hashcode.co.kr/questions/780/externalizable%EB%8A%94-%EB%AD%94%EA%B0%80%EC%9A%94
+
+Externalizable 인터페이스는 Serializable 인터페이스를 확장한 형태로 세부적인 필드를 직접 제어할 수 있는 특징이 있다. transient 키워드를 사용하여 특정 필드를 제외시키는 것도 가능하지만 좀 더 세부적인 작업이 필요할 때 Externalizable 인터페이스를 사용할 수 있다.
+
+1. Externalizable 인터페이스 Externalizable 인터페이스를 사용하면 객체 스트림을 통하여 객체를 읽고 쓸 때 내부의 내용을 자유롭게 조작하면서 원하는 내용을 출력할 수 있도록 도와준다. 이를 위해서 이 인터페이스는 Serializable 인터페이스를 확장하고 두 가지 메소드를 추가하였다. 하나는 출력을 위한 writeExternal() 메소드이고 또 하나는 입력을 위한 readExternal() 메소드다.
+2. 객체 스트림 직렬화시의 동작 (1) 출력 (직렬화)
+3. 객체 스트림을 통하여 객체를 출력하는 메소드가 호출되면 가장 먼저 그 객체의 클래스가 Externalizable 인터페이스를 구현했는지 확인한다. 만약 구현했다면 writeExternal() 메소드를 통해서 전송 데이터를 직렬화 한다.
+4. Externalizable 인터페이스를 구현하지 않았다면 Serializable 인터페이스를 구현했는지 확인한다. Serializable 인터페이스를 구현했다면 그대로 객체 스트림에 객체 전체를 직렬화 한다.
+5. Externalizable, Serializable 인터페이스를 구현하지 않았다면 Exception이 발생한다.
+
+(2) 입력 (역직렬화)
+
+- 스트림을 통해 전송받은 객체가 Externalizable 인터페이스를 구현했는지 확인한다. 구현했다면 readExternal() 메소드를 통해서 전송받은 데이터를 순서대로 읽어온다.
+- Externalizable 인터페이스를 구현하지 않았다면 Serializable 인터페이스를 통해 객체 전체를 역직렬화 한다.
+
+(3) writeExternal(), readExternal()
+
+- Externalizable 인터페이스를 구현할 때는 writeExtenral()과 readExternal() 메소드를 작성해야 한다.
+- Serializable 인터페이스는 모든 변수(transient 제외)를 직렬화하는 반면 Externalizable 인터페이스는 직렬화할 대상을 직접 writeExternal() 메소드에 구현해야 한다. (transient 변수도 직렬화하여 전송할 수 있다.)
+- out.writeObject(name); 과 같이 직렬화할 변수 하나하나 writeObject()에 써줘야 한다.
+- 스트림을 통해 객체를 받아 역직렬화를 할 때에도 readExternal() 메소드에서 하나하나 받은 데이터를 변수에 넣어줘야 한다.
+- in.readObject(); 를 사용하여, writeExternal() 메소드에서 writeObject()에 넣어 준 변수의 순서대로 데이터를 가져온다.	
+	
