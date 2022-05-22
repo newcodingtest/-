@@ -144,7 +144,7 @@ public class MockDictionaryFactory implements DictionaryFactory{
 >
 > 클라이언트 에서는 코드의 변경없다.
 >
-> 다시확장에 열려있고 변경에 닫혀있는 상태이다.
+> 다시 말해서 확장에 열려있고 변경에 닫혀있는 상태이다.
 
 
 
