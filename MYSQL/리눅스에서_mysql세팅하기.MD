@@ -1,4 +1,32 @@
 
+계정생성
+
+> create user 계정이름@localhost identified by '비밀번호';         
+>
+> create user 계정이름@'%' identified by '비밀번호';    
+
+
+
+권한부여
+
+> grantall privileges on 스키마.테이블 to '계정'@'localhost' identified by '비밀번호';
+>
+> grant all privileges on 스키마.테이블 to '계정'@'%' identified by '비밀번호';
+>
+> #모든 권한 부여
+>
+> grant all privileges on 테이블.*  to '계정'@'%' identified by '비밀번호';
+
+
+
+수정사항 반영
+
+>  flush privileges;
+
+
+
+
+
 |   작업   |                        우분투 명령어                         |                        CentOS6 명령어                        |                        CentOS7 명령어                        |
 | :------: | :----------------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
 |   시작   | [service mysql start](https://zetawiki.com/w/index.php?title=Service_mysql_start&action=edit&redlink=1) | [service mysqld start](https://zetawiki.com/w/index.php?title=Service_mysqld_start&action=edit&redlink=1) | [systemctl start mysqld](https://zetawiki.com/w/index.php?title=Systemctl_start_mysqld&action=edit&redlink=1) |
