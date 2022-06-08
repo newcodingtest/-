@@ -161,7 +161,7 @@ wait_timeout 안에 다시 요청이 들어오면 wait time 은 0 으로 초기�
 
 ##### 등록된 외부아이피 에서 db서버에 접속할수 있게 하기
 
-> mysql -h 192.168.0.241 -u root -p
+> mysql -h서버아이피 -uroot -p
 
 >  iptables -I INPUT 1 -p tcp --dport 3306 -j ACCEPT
 
