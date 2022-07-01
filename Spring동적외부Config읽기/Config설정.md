@@ -12,7 +12,7 @@ Spring Boot 동작 시 **Property**를 찾는 순서입니다. (몇 가지는 �
 | **3. jar 파일과 같은 경로에 존재하는 properties 파일** | .properties, .yml profile 모두 적용 가능                |
 | **4. jar 파일과 함께 패키징된 properties 파일**        | src/main/resources 경로에 위치한 application.properties |
 
-
+<br><br><br>
 
 
 
@@ -28,7 +28,10 @@ Spring Boot 동작 시 **Property**를 찾는 순서입니다. (몇 가지는 �
 
 ![image](https://user-images.githubusercontent.com/57785267/176814040-89b2272e-284f-4c7a-aecc-909fb1d2f0e4.png)
 
+<br><br><br>
 
+
+## Spring 프로퍼티 우선순위
 
 1. [spring-boot-devtools](https://docs.spring.io/spring-boot/docs/current/reference/html/using-spring-boot.html#using-boot-devtools)를 활성화 시켰을 때 `$HOME/.config/spring-boot` 디렉토리에 안에서 제공하는 프로퍼티
 2. 테스트에 사용한 `@TestPropertySource`가 제공하는 프로퍼티
