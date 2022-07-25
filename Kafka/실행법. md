@@ -1,0 +1,67 @@
+# Windows 환경에서의 Kafka 실행
+
+### **1. Zookeeper 실행**
+
+> .\bin\windows\zookeeper-server-start.bat .\config\zookeeper.properties
+
+**포트 2181 확인**
+
+![image-20220725175921342](C:\Users\pulpu\AppData\Roaming\Typora\typora-user-images\image-20220725175921342.png)
+
+### **2.Kafka 서버 실행**
+
+> .\bin\windows\kafka-server-start.bat .\config\server.properties
+
+**포트 9092 확인**
+
+![image-20220725180113043](C:\Users\pulpu\AppData\Roaming\Typora\typora-user-images\image-20220725180113043.png)
+
+
+
+### **3.Kafka 토픽 등록**
+
+> .\bin\windows\kafka-topics.bat --bootstrap-server localhost:9092 --create --topic quickstart-events --partitions 1
+
+#### ![image-20220725180357357](C:\Users\pulpu\AppData\Roaming\Typora\typora-user-images\image-20220725180357357.png)
+
+#### 3-1. 등록된 토픽 확인
+
+> .\bin\windows\kafka-topics.bat --bootstrap-server localhost:9092 --list 
+
+![image-20220725180416617](C:\Users\pulpu\AppData\Roaming\Typora\typora-user-images\image-20220725180416617.png)
+
+
+
+### **4.토픽 구독**
+
+> .\bin\windows\kafka-topics.bat --bootstrap-server localhost:9092 --describe --topic quickstart-events
+
+![image-20220725180639719](C:\Users\pulpu\AppData\Roaming\Typora\typora-user-images\image-20220725180639719.png)
+
+
+
+### **5.Producer 실행**
+
+> .\bin\windows\kafka-console-producer.bat --broker-list localhost:9092 --topic quickstart-events
+
+### **6.Consumer 실행**
+
+> .\bin\windows\kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic quickstart-events --from-beginning
+
+
+
+#### **최종**
+
+Producer 콘솔에서 문자 전송시 Consumer  콘솔에서 받음
+
+![image-20220725181415105](C:\Users\pulpu\AppData\Roaming\Typora\typora-user-images\image-20220725181415105.png)
+
+
+
+**추신1**
+
+새로운 Consumer를 생성하여 총 2개의 Consumer 에서 Producer 내용 확인하기
+
+> ###### **.\bin\windows\kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic quickstart-events --from-beginning**
+
+![image-20220725181635506](C:\Users\pulpu\AppData\Roaming\Typora\typora-user-images\image-20220725181635506.png)
