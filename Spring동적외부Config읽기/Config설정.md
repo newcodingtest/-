@@ -31,6 +31,14 @@ Spring Boot 동작 시 **Property**를 찾는 순서입니다. (몇 가지는 �
 <br><br><br>
 
 
+#### 두번째 쉬운 방법
+--spring.config.location 옵션 사용
+> D:\jdk-17.0.2\bin\java -jar recv.jar --spring.config.location=D:\backup\intelli_workspace\SKT-UAM\target\application-dev.properties
+
+![image](https://user-images.githubusercontent.com/57785267/210946400-3bab9646-9b85-4d50-8ee1-a27943ea3be7.png)
+
+
+
 ## Spring 프로퍼티 우선순위
 
 1. [spring-boot-devtools](https://docs.spring.io/spring-boot/docs/current/reference/html/using-spring-boot.html#using-boot-devtools)를 활성화 시켰을 때 `$HOME/.config/spring-boot` 디렉토리에 안에서 제공하는 프로퍼티
