@@ -21,3 +21,8 @@ docker run -d --hostname my-rabbit --name some-rabbit -p 8081:15672 -p 5672:5672
 ### 4.rabbitmqctl 로 큐 생성하기
 
 > rabbitmqadmin -u root -p root -V / declare queue name=010
+
+
+### 5.rabbitmq config 파일 import 하기
+
+> rabbitmqadmin import rabbit_a63e5330d5cc_2023-5-16.json
