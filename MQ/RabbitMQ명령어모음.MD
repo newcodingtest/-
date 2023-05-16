@@ -26,3 +26,11 @@ docker run -d --hostname my-rabbit --name some-rabbit -p 8081:15672 -p 5672:5672
 ### 5.rabbitmq config 파일 import 하기
 
 > rabbitmqadmin import rabbit_a63e5330d5cc_2023-5-16.json
+
+
+
+### 6.rabbitmq 초기화
+
+> 1.rabbitmqctl stop_app <br>
+> 2.rabbitmqctl reset
+> 3.rabbitmqctl start_app
