@@ -32,5 +32,5 @@ docker run -d --hostname my-rabbit --name some-rabbit -p 8081:15672 -p 5672:5672
 ### 6.rabbitmq 초기화
 
 > 1.rabbitmqctl stop_app <br>
-> 2.rabbitmqctl reset
+> 2.rabbitmqctl reset <br>
 > 3.rabbitmqctl start_app
