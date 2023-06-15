@@ -38,4 +38,5 @@ docker run -d --hostname my-rabbit --name some-rabbit -p 8081:15672 -p 5672:5672
 
 <br>
 ### 7.rabbitmq queue 안에 들어있는 데이터 clean 하기
+
 >  rabbitmqadmin --port=15672 --username=root --password=root purge -V/ queue name=002r
