@@ -44,5 +44,9 @@ docker run -d --hostname my-rabbit --name some-rabbit -p 8081:15672 -p 5672:5672
 
 <br>
 
-### 8. queue 조회하기
+### 8. rabbitmqadmin 이용한 queue 조회하기
 > rabbitmqadmin -u root -p root -V / list queues name messages
+
+<br>
+### 9.rabbitmqctl 이용한 queue 조회하기
+> rabbitmqctl -p / list_queues name messages | grep 001
