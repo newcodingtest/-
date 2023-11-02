@@ -1,56 +1,70 @@
-#### **1.유저 추가**
+Rabbitmq Docker 실행 명령어**
 
-> rabbitmqctl add_user test test
-
-#### 2.권한 추가
-
-> rabbitmqctl set_user_tags test administrator
-
-#### 3.접근허용 범위 추가
-
-> rabbitmqctl set_permissions -p / test ".*" ".*" ".*"
-
-
-
-
+```
 docker run -d --hostname my-rabbit --name some-rabbit -p 8081:15672 -p 5672:5672 -v /home/rabbitmq/data:/var/lib/rabbitmq/ -v /home/rabbitmq/logs:/var/log/rabbitmq/ -e RABBITMQ_DEFAULT_USER=admin -e RABBITMQ_DEFAULT_PASS=admin rabbitmq:3-management
+```
+
+
+
+**유저 추가**
+
+```
+rabbitmqctl add_user guest guest
+```
+
+
+
+**권한 추가**
+
+```
+rabbitmqctl set_user_tags guest administrator
+```
+
+
+
+**접근 허용범위 추가**
+
+```
+abbitmqctl set_permissions -p atm guest "." "." ".*"
+```
+
+
+
+**큐 생성하기**
+
+```
+-rabbitmqadmin -u guest -p guest -V atm declare queue name=q.atm
+```
+
+
+
+**rabbitmq config 파일 import 하기**
+
+```
+rabbitmqadmin import rabbit_a63e5330d5cc_2023-5-16.json
+```
+
+
+
+ **rabbitmq 초기화**
+
+```
+1.rabbitmqctl stop_app
+2.rabbitmqctl reset
+3.rabbitmqctl start_app
+```
+
+
+
+**queue 데이터 초기화**
+
+```
+rabbitmqadmin --port=15672 --username=guest --password=guest purge -V atm queue name=q.atm
+```
 
 
 
 
-### 4.rabbitmqctl 로 큐 생성하기
-
-> rabbitmqadmin -u root -p root -V / declare queue name=010
-
-
-### 5.rabbitmq config 파일 import 하기
-
-> rabbitmqadmin import rabbit_a63e5330d5cc_2023-5-16.json
-
-
-
-### 6.rabbitmq 초기화
-
-> 1.rabbitmqctl stop_app <br>
-> 2.rabbitmqctl reset <br>
-> 3.rabbitmqctl start_app
-
-
-<br>
-
-### 7.rabbitmq queue 안에 들어있는 데이터 clean 하기
-
->  rabbitmqadmin --port=15672 --username=root --password=root purge -V/ queue name=002r
-
-<br>
-
-### 8. rabbitmqadmin 이용한 queue 조회하기
-> rabbitmqadmin -u root -p root -V / list queues name messages
-
-<br>
-### 9.rabbitmqctl 이용한 queue 조회하기
-
-> rabbitmqctl -p / list_queues name messages | grep 001
 
 
 
