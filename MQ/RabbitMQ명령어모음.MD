@@ -49,4 +49,68 @@ docker run -d --hostname my-rabbit --name some-rabbit -p 8081:15672 -p 5672:5672
 
 <br>
 ### 9.rabbitmqctl 이용한 queue 조회하기
+
 > rabbitmqctl -p / list_queues name messages | grep 001
+
+
+
+
+
+
+
+
+
+**show queue list**
+
+```
+rabbitmqctl list_queues
+```
+
+
+
+**show exchange list**
+
+```
+rabbitmqctl list_exchanges
+```
+
+
+
+**add vrhost**
+
+```
+rabbitmqctl add_vhost atm
+```
+
+
+
+**set  permissions to id about vrhost**
+
+```
+rabbitmqctl set_permissions -p atm guest ".*" ".*" ".*"
+```
+
+
+
+**make a exchange**
+
+```
+rabbitmqadmin declare exchange --vrhost=atm name=x.atm type=topic
+```
+
+
+
+**make a queue**
+
+```
+rabbitmqadmin declare queue --vrhost=atm name=q.atm durable=true
+```
+
+
+
+**make a bining**
+
+```
+rabbitmqadmin --vrhost=atm declare binding source=x.atm destination=q.atm routing_key=x.key
+```
+
