@@ -88,6 +88,9 @@ public class Address {
 
 
 
+
+
+
 ### 불변 클래스 만들 때 고려사항
 
 - 상속을 막을 수 있는 다른 방법
@@ -124,4 +127,69 @@ public class Address {
   - 정적 팩토리 메서드를 사용하면 구체 클래스를 자유롭게 정할수 있기 때문에 유연하다. 외부에서는 상위 인스턴스로만 받기 때문에 캡슐화도 된다.
 
      ex) BigInteger 참고
+
+
+
+
+### final과 자바 메모리 모델(JVM)
+
+- 불안전한 초기화가 발생할 수 있다.
+
+  ```
+  public class Yoon {
+   final int x;
+   int y;
+   
+   public Yoon(){
+   	this.x = 3;
+   	this.y = 4;
+   }
+  }
+  
+  public class Client {
+  	public static void main(String[] args){
+  		Yoon y = new Yoon();
+  	}
+  }
+  ```
+
+  - `메모리 모델`은 `하나의 쓰레드` 안에서 안전한 초기화가 가능하지만 `멀티 쓰레드`인 경우 보장할 수 없다. 
+
+  - JVM 모델에 따라서 초기화 순서가 다를 수 있는데
+
+  ```
+  Object y = new Yoon()
+  yoon = y
+  y.x = 3;
+  y.y = 4;
+  ```
+
+  이런식으로 초기화 과정에서 `y.y = 4`라는 값이 세팅되기 전에 0인 상태에서 객체를 참조할경우 불안전한 초기화 문제가 발생할 수 있다.(멀티쓰레드 환경에서 발생 가능성이 존재)
+
+  `this.x` 는 `3`을 보장하지만 `this.y` 는 `0`이 될수도 있다.
+
+  `때문에 객체를 초기화할때 필드가 값을 무조건 배정받고 초기화 되기를 보장받고 싶다면 final 키워들 사용하자.`
+
+
+
+
+
+
+
+
+
+### 병행 프로그래밍에 유용하게 사용할 수 있는 유틸리티 
+
+- `병행`은 여러 작업을 번갈아 가며 실행하여 `마치 동시에 여러 작업을 동시에 처리하듯이 보이지만`, `실제로는 한번에 오직 한 작업만 실행한다.`(CPU가 `한개`여도 가능)
+
+  ![image](https://github.com/newcodingtest/-/assets/57785267/ec75eb55-b520-47dc-90ce-4cec4abe95c2)
+
+
+- `병렬`은 `여러 작업을 동시에 처리`한다.(CPU가 `여러개` 있어야 한다.) 
+
+ ![image](https://github.com/newcodingtest/-/assets/57785267/74aa4de0-1367-489f-b8df-e773c6e1cc15)
+
+
+
+- 유용한 유틸리티로는 `CountDownLatch` 가 있다.
 
